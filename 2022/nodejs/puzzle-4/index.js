@@ -1,13 +1,9 @@
 const { read } = require('./read'),
     _ = require('underscore');
 
-const checkContains = (arr1, arr2) => {
-    if(arr1.length > arr2.length) {
-        return _.without(arr2, ...arr1).length === 0;
-    } else {
-        return  _.without(arr1, ...arr2).length === 0;
-    }
-}
+const checkContains = (arr1, arr2) => _.without(arr2, ...arr1).length === 0 || _.without(arr1, ...arr2).length === 0;
+
+const checkParcialContains = (arr1, arr2) => _.without(arr2, ...arr1).length !== arr2.length || _.without(arr1, ...arr2).length !== arr1.length;
 
 const data = read('input.txt', '|').split('|').map(str => str.split(',')).map(el => {
     let group1Start = parseInt(el[0].split('-')[0]);
@@ -17,9 +13,11 @@ const data = read('input.txt', '|').split('|').map(str => str.split(',')).map(el
 
     return [
         group1Start === group1End ? [group1End] : _.range(group1Start, group1End + 1, 1),
-        group2Start === group2End ? [group2End] : _.range(group2Start, group2End + 2, 1)
+        group2Start === group2End ? [group2End] : _.range(group2Start, group2End + 1, 1)
     ];
-}).map(el => checkContains(el[0], el[1]));
+});
+
+const translated = data.map(el => checkContains(el[0], el[1]));
 
 // data.forEach(el => {
 //     if(checkContains(el[0], el[1]))
@@ -27,7 +25,14 @@ const data = read('input.txt', '|').split('|').map(str => str.split(',')).map(el
 // })
 
 
-const count = _.size(_.filter(data, (el => el === true)));
+const translated2 = data.map(el => checkParcialContains(el[0], el[1]));
+
+const count = _.size(_.filter(translated, (el => el === true)));
 
 console.log(`-------------------Part 1-------------------------`)
 console.log(`Number of pairs are ${count}`);
+
+
+const count2 = _.size(_.filter(translated2, (el => el === true)));
+console.log(`-------------------Part 2-------------------------`)
+console.log(`Number of parcial pairs are ${count2}`);
